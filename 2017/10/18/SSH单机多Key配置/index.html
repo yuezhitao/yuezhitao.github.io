@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>SSH单机多Key配置 | Zhitao</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="因为日常工作中会涉及到多个Git远程库，比如说既要使用公司的Git地址，又要用到GitHub，而每个远程库又使用的是不同的密钥对，这样我在自己的电脑上就要使用不同的密钥对去连接相应的库，对此我进行了如下的一些配置： 假设我要配置github和gitee两个git源的连接 生成秘钥对首先肯定是为不同的源生成各自的密钥对，这步应该比较简单： ssh-keygen -t rsa -C &amp;quot;zhi">
+<meta name="keywords" content="git,ssh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SSH单机多Key配置">
+<meta property="og:url" content="http://yuezhitao.github.io/2017/10/18/SSH单机多Key配置/index.html">
+<meta property="og:site_name" content="Zhitao">
+<meta property="og:description" content="因为日常工作中会涉及到多个Git远程库，比如说既要使用公司的Git地址，又要用到GitHub，而每个远程库又使用的是不同的密钥对，这样我在自己的电脑上就要使用不同的密钥对去连接相应的库，对此我进行了如下的一些配置： 假设我要配置github和gitee两个git源的连接 生成秘钥对首先肯定是为不同的源生成各自的密钥对，这步应该比较简单： ssh-keygen -t rsa -C &amp;quot;zhi">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-10-18T07:22:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SSH单机多Key配置">
+<meta name="twitter:description" content="因为日常工作中会涉及到多个Git远程库，比如说既要使用公司的Git地址，又要用到GitHub，而每个远程库又使用的是不同的密钥对，这样我在自己的电脑上就要使用不同的密钥对去连接相应的库，对此我进行了如下的一些配置： 假设我要配置github和gitee两个git源的连接 生成秘钥对首先肯定是为不同的源生成各自的密钥对，这步应该比较简单： ssh-keygen -t rsa -C &amp;quot;zhi">
+  
+    <link rel="alternate" href="/atom.xml" title="Zhitao" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Zhitao</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yuezhitao.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-SSH单机多Key配置" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/18/SSH单机多Key配置/" class="article-date">
+  <time datetime="2017-10-18T05:48:48.000Z" itemprop="datePublished">2017-10-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SSH单机多Key配置
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>因为日常工作中会涉及到多个Git远程库，比如说既要使用公司的Git地址，又要用到GitHub，而每个远程库又使用的是不同的密钥对，这样我在自己的电脑上就要使用不同的密钥对去连接相应的库，对此我进行了如下的一些配置：</p>
+<p>假设我要配置github和gitee两个git源的连接</p>
+<h3 id="生成秘钥对"><a href="#生成秘钥对" class="headerlink" title="生成秘钥对"></a>生成秘钥对</h3><p>首先肯定是为不同的源生成各自的密钥对，这步应该比较简单：</p>
+<pre><code>ssh-keygen -t rsa -C &quot;zhitao.yue@gmail.com&quot;
+</code></pre><p>将生成出来的id_rsa和id_rsa.pub重命名一下，以便区分<br>这样我就有两套秘钥对了</p>
+<pre><code>github_id_rsa
+github_id_rsa.pub
+gitee_id_rsa
+gitee_id_rsa.pub
+</code></pre><p>公钥是要提供给对方网站的，具体步骤网站上一般都有描述，这里就不详细讲了。私钥自己好好保管，不要轻易透露给别人。</p>
+<h3 id="配置ssh-config文件"><a href="#配置ssh-config文件" class="headerlink" title="配置ssh config文件"></a>配置ssh config文件</h3><p>接下来就是做配置了<br>在<code>~/.ssh/</code>下创建名为<code>config</code>的文件，并在其中添加如下配置并保存：</p>
+<pre><code>Host gitee.com
+    HostName gitee.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/gitee_id_rsa
+
+Host github.com
+    HostName github.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/github_id_rsa
+</code></pre><p>这里说一下Host和HostName两个参数，Host是指在键入ssh命令时指定的那个主机名，HostName是真正连接的主机名。如果还不清楚的话，看下面这个例子就明白啦</p>
+<pre><code>Host HelloGitHub
+    HostName github.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/github_id_rsa
+</code></pre><p>我把Host改为了HelloGitHub，这样我就可以执行命令ssh -T git@HelloGitHub，并且得到成功返回</p>
+<h3 id="完成配置，执行测试"><a href="#完成配置，执行测试" class="headerlink" title="完成配置，执行测试"></a>完成配置，执行测试</h3><p>当配置好config文件并保存后，我们就可以执行测试了</p>
+<pre><code>yuezhitao$ ssh -T git@github.com
+Hi yuezhitao! You&apos;ve successfully authenticated, but GitHub does not provide shell access.
+yuezhitao$ ssh -T git@gitee.com
+Welcome to Gitee.com, zhitao!
+</code></pre><p>配置成功！这样我们就可以自由地同时使用多个Git源了</p>
+<h3 id="修改了config文件，还是不生效怎么办？"><a href="#修改了config文件，还是不生效怎么办？" class="headerlink" title="修改了config文件，还是不生效怎么办？"></a>修改了config文件，还是不生效怎么办？</h3><p>之前也遇到过，即使修改了config文件，但是好像还是没有生效，依然得到<code>Permission denied (publickey).</code>报错。后来我采用手动将私钥加到ssh session缓存中解决这个问题</p>
+<p>先确认ssh-agent是否启动，如果没有启动，执行<code>ssh-agent -s</code>开启<br>然后依次将私钥加入缓存<code>ssh-add ~/.ssh/github_id_rsa</code> <code>ssh-add ~/.ssh/gitee_id_rsa</code><br>再执行<code>ssh -T git@github.com</code>的测试，应该就能获得成功的结果了</p>
+<p>附两个有用的链接：</p>
+<p><a href="https://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent/17695338#17695338" target="_blank" rel="external">https://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent/17695338#17695338</a></p>
+<p><a href="https://stackoverflow.com/questions/3225862/multiple-github-accounts-ssh-config" target="_blank" rel="external">https://stackoverflow.com/questions/3225862/multiple-github-accounts-ssh-config</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yuezhitao.github.io/2017/10/18/SSH单机多Key配置/" data-id="cj8wpqhm00002jzgwlot71r2h" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssh/">ssh</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/09/12/Elasticsearch-SourceCode-IDEA-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Debug Elasticsearch Souce Code in IntelliJ IDEA</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/idea/" style="font-size: 10px;">idea</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/10/18/SSH单机多Key配置/">SSH单机多Key配置</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/12/Elasticsearch-SourceCode-IDEA-1/">Debug Elasticsearch Souce Code in IntelliJ IDEA</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/12/Hello-World-From-Patsnap/">Hello World From Patsnap</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/12/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 Zhitao Yue<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
